@@ -10,17 +10,20 @@ use App\Repository\PurchaseOrderRepository;
 use App\Repository\PurchaseOrderLineRepository;
 use App\Repository\TermsRepository;
 use App\Repository\VendorRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PurchaseOrderController extends AbstractController
 {
   public function __construct(
+    private EntityManagerInterface $em,
+    private ValidatorInterface $validator,
     private PurchaseOrderRepository $po_repo,
     private PurchaseOrderLineRepository $po_line_repo,
     private LocationRepository $loc_repo,
@@ -124,6 +127,11 @@ class PurchaseOrderController extends AbstractController
     $po_form = $this->createForm(PurchaseOrderType::class);
     $po_form->handleRequest($request);
     $po = $po_form->getData();
+    $errors = $this->validator->validate($po);
+    if (count($errors) > 0)
+    {
+      dd($errors);
+    }
     $this->em->merge($po);
     $this->em->flush();
     $this->addFlash('success', 'Purchase Order Updated');
@@ -142,6 +150,11 @@ class PurchaseOrderController extends AbstractController
     $po_form = $this->createForm(PurchaseOrderType::class);
     $po_form->handleRequest($request);
     $po = $po_form->getData();
+    $errors = $this->validator->validate($po);
+    if (count($errors) > 0)
+    {
+      dd($errors);
+    }
     $this->em->persist($po);
     $this->em->flush();
     $this->addFlash('success', 'Purchase Order Created');
@@ -166,6 +179,59 @@ class PurchaseOrderController extends AbstractController
     $this->em->flush();
     $this->addFlash('success', 'Removed Purchse Order Entry');
     return $this->redirectToRoute('po_list');
+  }
+
+
+  /**
+   * Fetches selected purchase order lines for template fragment
+   * 
+   * @author Daniel Boling
+   */
+  #[Route('/po_lines_list/', name:'po_create')]
+  public function po_lines_list(Request $request, ?string $po_num, ?int $po_line_page = 1): Response
+  {
+    $po_line_thead = [
+      'po_line' => 'PO Line',
+      'po_status' => 'PO Status',
+      'item' => 'Item Code',
+      'qty_ordered' => 'Qty Ordered',
+      'qty_received' => 'Qty Received',
+      'qty_rejected' => 'Qty Rejected',
+      'qty_vouchered' => 'Qty Vouchered',
+      'item_cost' => 'Item Cost',
+      'po_due_date' => 'PO Due Date',
+      'po_received_date' => 'PO Recieved Date',
+      'po_received' => 'PO Received',
+      'po_paid' => 'PO Paid',
+      'item_qty' => 'Item Qty',
+    ];
+    // to autofill form fields, or leave them null.
+    $result = $this->po_line_repo->find_po_lines((int) $po_num);
+    $result = $this->paginator->paginate($result, $po_line_page, 10, ['pageParameterName' => 'po_line_page']);
+    $normalized_po_lines = [];
+    foreach ($result->getItems() as $item)
+    {
+      $normalized_po_lines[] = [
+        'po_line' => $item->getPoLine(),
+        'po_status' => $item->getPoStatus(),
+        'item' => $item->getItem()->getItemCode(),
+        'qty_ordered' => $item->getQtyOrdered(),
+        'qty_received' => $item->getQtyReceived(),
+        'qty_rejected' => $item->getQtyRejected(),
+        'qty_vouchered' => $item->getQtyVouchered(),
+        'item_cost' => $item->getItemCost(),
+        'po_due_date' => date_format($item->getPoDueDate(), 'Y-m-d'),
+        'po_received_date' => date_format($item->getPoReceivedDate(), 'Y-m-d'),
+        'po_received' => $item->getPoReceived(),
+        'po_paid' => $item->getPoPaid(),
+        'item_qty' => $item->getItemQuantity(),
+      ];
+    }
+    $result->setItems($normalized_po_lines);
+    return $this->render('purchase_order/po_lines.html.twig', [
+      'po_lines' => $result,
+      'po_line_thead' => $po_line_thead,
+    ]);
   }
 
 

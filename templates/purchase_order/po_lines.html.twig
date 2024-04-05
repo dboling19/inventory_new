@@ -1,29 +1,3 @@
-{% block content %}
-<table>
-  <tr>
-    <th>{{ knp_pagination_sortable(po_line_result, 'PO Line', 'po.po_line') }}</th>
-    <th>{{ knp_pagination_sortable(po_line_result, 'Item Code', 'item.item_code') }}</th>
-    <th>{{ knp_pagination_sortable(po_line_result, 'Qty Ordered', 'po.qty_ordered') }}</th>
-    <th>{{ knp_pagination_sortable(po_line_result, 'Qty Receieved', 'po.qty_received') }}</th>
-    <th>{{ knp_pagination_sortable(po_line_result, 'Qty Rejected', 'po.qty_rejected') }}</th>
-    <th>{{ knp_pagination_sortable(po_line_result, 'Item Cost', 'po.item_cost') }}</th>
-    <th>{{ knp_pagination_sortable(po_line_result, 'Item Unit', 'item.item_unit') }}</th>
-    <th>{{ knp_pagination_sortable(po_line_result, 'Due Date', 'po.po_due_date') }}</th>
-    <th>{{ knp_pagination_sortable(po_line_result, 'Received Date', 'po.po_received_date') }}</th>
-  </tr>
-  {% for row in po_line_result %}
-    <tr>
-      <td><input type="text" class="db-input" value="{{ row.poLine }}"></td>
-      <td><input type="text" class="db-input" value="{{ row.item.itemCode }}"></td>
-      <td><input type="text" class="db-input" value="{{ row.qtyOrdered }}"></td>
-      <td><input type="text" class="db-input" value="{{ row.qtyReceived }}"></td>
-      <td><input type="text" class="db-input" value="{{ row.qtyRejected }}"></td>
-      <td><input type="text" class="db-input" value="{{ row.itemCost }}"></td>
-      <td><input type="text" class="db-input" value="{{ row.item.itemUnit.unitCode }}"></td>
-      <td><input type="text" class="db-input" value="{{ row.poDueDate|format_datetime('short','none') }}"></td>
-      <td><input type="text" class="db-input" value="{{ row.poReceivedDate|format_datetime('short', 'none') }}"></td>
-    </tr> 
-  {% endfor %}
-</table>
+{{ knp_pagination_render(po_lines, 'pagination/dboling_pagination.html.twig') }}
+<div {{ stimulus_controller('table_widget', {'thead': po_line_thead, 'tdata': po_lines.items}) }}></div>
 {# {{ include('purchase_order/po_line_form.html.twig') }} #}
-{% endblock %}

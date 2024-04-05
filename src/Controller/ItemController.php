@@ -18,9 +18,9 @@ use App\Repository\WarehouseRepository;
 use App\Service\TransactionService;
 use Knp\Component\Pager\PaginatorInterface;
 use App\Form\ItemType;
-use App\Serializer\Normalizer\Normalizer;
 use Datetime;
 use Datetimezone;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ItemController extends AbstractController
 {
@@ -34,7 +34,7 @@ class ItemController extends AbstractController
     private WarehouseRepository $whs_repo,
     private TransactionService $trans_service,
     private PaginatorInterface $paginator,
-    private Normalizer $normalizer,
+    private ValidatorInterface $validator,
   ) { }
 
   /**
@@ -115,10 +115,13 @@ class ItemController extends AbstractController
     $item_form = $this->createForm(ItemType::class);
     $item_form->handleRequest($request);
     $item = $item_form->getData();
-    if (!$item_form->isValid())
-    {
+    if (
+      $item_form->get('item_code') == null ||
+      $item_form->get('item_desc') == null ||
+      $item_form->get('item_unit') == null
+    ) {
       $this->addFlash('error', 'Error: Invalid Submission - Item not updated');
-      return $this->redirectToRoute('item_search', ['item_code' => $item->getItemCode()]);
+      return $this->redirectToRoute('item_list', ['item_code' => $item->getItemCode()]);
     }
     if ($this->item_repo->find($item->getItemCode())) {
       return $this->redirectToRoute('item_modify', ['item' => $item], 307);

@@ -24,7 +24,7 @@ class LocationType extends AbstractType
         'required' => true,
       ])
       ->add('loc_desc', TextType::class, [
-        'required' => true,
+        'required' => false,
       ])
       ->add('loc_notes', TextareaType::class, [
         'required' => false,

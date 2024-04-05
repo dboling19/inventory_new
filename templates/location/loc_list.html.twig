@@ -10,13 +10,10 @@
     {{ include('location/loc_form.html.twig') }}
     <div class="db-tab">
       <button class="db-tablinks db-button" onclick="open_tab(event, 'items')">Items</button>
-      <button class="db-tablinks db-button" onclick="open_tab(event, 'vendor_details')">Log</button>
     </div>
     <div id="items" class="db-tabcontent db-resize-horizontal db-half">
       {{ render(controller('App\\Controller\\LocationController::loc_items_list', {loc_code: form.vars.value.locCode ?? '', item_page: app.request.get('item_page') ?? 1})) }}
-    </div>
-    <div id="vendor_details" class="db-tabcontent db-quarter">
-      {# {{ include('vendor/vendor_details.html.twig') }} #}
+      {# necessary as the controller has no access to the initial request data.  It must be resent to the controller. #}
     </div>
   </div>
 </div>

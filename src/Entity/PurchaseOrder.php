@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PurchaseOrderRepository::class)]
 class PurchaseOrder
@@ -14,35 +15,46 @@ class PurchaseOrder
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Assert\NotBlank]
     private ?int $po_num = null;
 
     #[ORM\ManyToOne(targetEntity:Vendor::class)]
     #[ORM\JoinColumn(name:'vendor_code', referencedColumnName:'vendor_code')]
-    private ?Vendor $vendor;
+    #[Assert\NotBlank]
+    private ?Vendor $vendor = null;
 
     #[ORM\ManyToOne(targetEntity:Terms::class)]
     #[ORM\JoinColumn(nullable:false, name:'terms_code', referencedColumnName:'terms_code')]
-    private ?Terms $terms;
+    #[Assert\NotBlank]
+    private ?Terms $terms = null;
 
     #[ORM\Column(type:'string', length:6, nullable:false)]
+    #[Assert\NotBlank]
     private ?string $po_ship_code = null;
 
-    #[ORM\Column(type: 'string', length:1, nullable:false)]
-    private ?string $po_status = null;
+    #[ORM\ManyToOne(targetEntity:Status::class)]
+    #[ORM\JoinColumn(nullable:false, name:'status_code', referencedColumnName:'status_code')]
+    #[Assert\NotBlank]
+    private ?Status $status;
 
     #[ORM\Column(type: types::DECIMAL, precision:9, scale:2, nullable:false)]
+    #[Assert\NotBlank]
     private ?string $po_freight = '0';
 
     #[ORM\Column(type: types::SMALLINT, length:1, nullable:false)]
+    #[Assert\NotBlank]
     private ?int $po_received = 0;
 
     #[ORM\Column(type: types::SMALLINT, length:1, nullable:false)]
+    #[Assert\NotBlank]
     private ?int $po_paid = 0;
 
     #[ORM\Column(type: 'datetime')]
+    #[Assert\NotBlank]
     private ?\Datetime $po_date = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank]
     private ?string $po_total_cost = '0';
 
     #[ORM\OneToMany(targetEntity: PurchaseOrderLine::class, mappedBy:'po')]
@@ -102,14 +114,14 @@ class PurchaseOrder
         return $this;
     }
 
-    public function getPoStatus(): ?string
+    public function getPoStatus(): ?Status
     {
-        return $this->po_status;
+        return $this->status;
     }
 
-    public function setPoStatus(string $po_status): static
+    public function setPoStatus(?Status $status): static
     {
-        $this->po_status = $po_status;
+        $this->status = $status;
 
         return $this;
     }

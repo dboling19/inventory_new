@@ -4,21 +4,18 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ItemRepository;
-use PhpParser\Node\Expr\Cast\Array_;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 #[ORM\Entity(repositoryClass:ItemRepository::class)]
 class Item
 {
   #[ORM\Id]
   #[ORM\Column(type:'string', length:8, nullable:false)]
-  private ?string $item_code;
+  private ?string $item_code = null;
 
   #[ORM\Column(type:'string', length:50, nullable:false)]
-  private ?string $item_desc;
+  private ?string $item_desc = null;
 
   #[ORM\Column(type:'text', nullable:true)]
   private ?string $item_notes = null;

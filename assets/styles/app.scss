@@ -114,8 +114,7 @@ tbody tr.selected {
 
 .db-resize-horizontal {
   resize:horizontal;
-  overflow:auto;
-
+  overflow-x:scroll;
 }
 
 .db-resize-vertical {
@@ -297,7 +296,7 @@ textarea.db-input {
   color:white;
   width:fit-content;
   font-size:13px;
-  padding:0px 3px;
+  padding:3px 5px;
   margin:0px 1px;
   display:inline;
 }
@@ -398,6 +397,12 @@ textarea.db-input {
 .db-tablinks {
   border-radius: 5px 5px 0px 0px;
   border-top:1px solid $nord0;
+}
+
+.db-tabcontent {
+  max-height:400px;
+  overflow:scroll;
+  display:none;
 }
 
 .db-bar {

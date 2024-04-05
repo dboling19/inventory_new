@@ -14,6 +14,7 @@ use App\Repository\TransactionRepository;
 use App\Repository\ItemLocationRepository;
 use App\Repository\TermsRepository;
 use App\Repository\VendorRepository;
+use App\Repository\StatusRepository;
 use Datetime;
 use Datetimezone;
 
@@ -28,6 +29,7 @@ class PurchaseOrderFixtures extends Fixture implements DependentFixtureInterface
     private ItemLocationRepository $item_loc_repo,
     private VendorRepository $vendor_repo,
     private TermsRepository $terms_repo,
+    private StatusRepository $status_repo,
   ) { }
 
 
@@ -100,7 +102,7 @@ class PurchaseOrderFixtures extends Fixture implements DependentFixtureInterface
       $po->setPoReceived(1);
       $po->setPoPaid(1);
       $po->setPoFreight(mt_rand(10,100)/10);
-      $po->setPoStatus(1);
+      $po->setPoStatus($this->status_repo->find('APPR'));
       $po->setPoShipCode('ASD123');
       $po->setPoTerms($this->terms_repo->find('D02'));
       $manager->persist($po);
@@ -124,6 +126,7 @@ class PurchaseOrderFixtures extends Fixture implements DependentFixtureInterface
       LocationFixtures::class,
       VendorFixtures::class,
       WarehouseFixtures::class,
+      StatusFixtures::class,
     ];
   }
 }

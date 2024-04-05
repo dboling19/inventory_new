@@ -21,6 +21,16 @@ class PurchaseOrderLineRepository extends ServiceEntityRepository
         parent::__construct($registry, PurchaseOrderLine::class);
     }
 
+    public function find_po_lines(?int $po_num)
+    {
+      return $this->createQueryBuilder('p')
+        ->andWhere('p.po = :po_num')
+        ->setParameter('po_num', $po_num)
+        ->getQuery()
+      ;
+    }
+
+
 //    /**
 //     * @return PurchaseOrderLine[] Returns an array of PurchaseOrderLine objects
 //     */

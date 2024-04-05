@@ -1,5 +1,5 @@
 {% block form %}
-<div class="db-panel db-wrapper db-third">
+<div class="db-panel db-wrapper db-half">
   {{ form_start(form, {'attr': {'class': 'db-wrapper db-fill db-column db-border'} }) }}
     {{ form_errors (form, {'class':'db-error'}) }}
     <div class="db-form-section">
@@ -20,6 +20,6 @@
     <div class="db-form-section">
       {{ form_row (form.vendor_phone, {'attr': {'class':'db-input'}}) }}
     </div>
-  {{ form_end (form) }}
+  {{ form_end (form, {render_rest: false}) }}
 </div>
 {% endblock %}

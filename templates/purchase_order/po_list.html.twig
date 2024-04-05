@@ -3,8 +3,8 @@
 {% block content %}
 <div class="db-wrapper">
   <div class="db-resize-horizontal db-quarter">
-    <div {{ stimulus_controller('table_widget', {'thead': po_thead, 'tdata': po_result.items}) }}></div>
     {{ knp_pagination_render(po_result, 'pagination/dboling_pagination.html.twig') }}
+    <div {{ stimulus_controller('table_widget', {'thead': po_thead, 'tdata': po_result.items}) }}></div>
   </div>
   <div class="db-wrapper db-column db-panel">
     {{ include('purchase_order/po_form.html.twig') }}
@@ -13,14 +13,13 @@
       <button class="db-tablinks db-button" onclick="open_tab(event, 'vendor_details')">Vendor</button>
     </div>
     <div id="po_lines" class="db-tabcontent db-resize-horizontal db-half">
-      {# {{ include('purchase_order/po_lines.html.twig') }} #}
+      {{ render(controller('App\\Controller\\PurchaseOrderController::po_lines_list', {po_num: form.vars.value.poNum ?? '', po_line_page: app.request.get('po_line_page') ?? 1})) }}
     </div>
-    <div id="vendor_details" class="db-tabcontent db-quarter">
-      {# {{ include('vendor/vendor_details.html.twig') }} #}
+    <div id="vendor_details" class="db-tabcontent db-resize-horizontal db-half">
+      {{ render(controller('App\\Controller\\VendorController::vendor_details', {po_num: form.vars.value.poNum ?? ''})) }}
     </div>
   </div>
 </div>
-
 
 
 <script>

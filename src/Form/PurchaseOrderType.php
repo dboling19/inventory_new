@@ -32,13 +32,7 @@ class PurchaseOrderType extends AbstractType
         'label' => 'Ship Code',
         'required' => false,
       ])
-      ->add('po_status', EntityType::class, [
-        'class' => Status::class,
-        'choice_label' => 'status_code',
-        'label' => 'Status',
-        'placeholder' => '',
-        'required' => false,
-      ])
+
       ->add('po_freight', TextType::class, [
         'label' => 'Freight',
         'required' => false,
@@ -64,6 +58,13 @@ class PurchaseOrderType extends AbstractType
         'class' => Vendor::class,
         'choice_label' => 'vendor_code',
         'label' => 'Vendor',
+        'placeholder' => '',
+        'required' => false,
+      ])
+      ->add('po_status', EntityType::class, [
+        'class' => Status::class,
+        'choice_label' => 'status_code',
+        'label' => 'Status',
         'placeholder' => '',
         'required' => false,
       ])

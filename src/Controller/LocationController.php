@@ -17,7 +17,7 @@ use App\Repository\WarehouseRepository;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use App\Form\LocationType;
-
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class LocationController extends AbstractController
 {
@@ -29,7 +29,8 @@ class LocationController extends AbstractController
     private ItemLocationRepository $item_loc_repo,
     private WarehouseRepository $whs_repo,
     private PaginatorInterface $paginator,
-    private RequestStack $request_stack
+    private RequestStack $request_stack,
+    private ValidatorInterface $validator,
   ) { }
 
   
@@ -55,7 +56,7 @@ class LocationController extends AbstractController
       'item_total_qty' => 'Item Total Qty.',
     ];
     $result = $this->loc_repo->findAll();
-    $result = $this->paginator->paginate($result, $request->query->getInt('loc_page', 1), 100, ['sortFieldParameterName' => 'loc_sort', 'sortDirectionParameterName' => 'loc_direction', 'pageParameterName' => 'loc_page']);
+    $result = $this->paginator->paginate($result, $request->query->getInt('loc_page', 1), 100, ['pageParamterName' => 'loc_page', 'sortParameterName' => 'loc_sort', 'sortDirectionParameterName' => 'loc_direction']);
     $normalized_locations = [];
     foreach ($result->getItems() as $item)
     {
@@ -102,7 +103,7 @@ class LocationController extends AbstractController
    * @author Daniel Boling
    */
   #[Route('/location/new/', name:'loc_new')]
-  public function loc_create(Request $request): Response
+  public function loc_new(Request $request): Response
   {
     $loc_form = $this->createForm(LocationType::class);
     $loc_form->handleRequest($request);
@@ -136,6 +137,29 @@ class LocationController extends AbstractController
     } else {
       return $this->redirectToRoute('loc_create', ['loc' => $loc], 307);
     }
+  }
+
+  /**
+ * Handle location creation
+ * 
+ * @author Daniel Boling
+ */
+  #[Route('/location/create/', name:'loc_create')]
+  public function loc_create(Request $request): Response
+  {
+    $loc_form = $this->createForm(LocationType::class);
+    $loc_form->handleRequest($request);
+    $loc = $loc_form->getData();
+    $errors = $this->validator->validate($loc);
+    dd($errors);
+    if ($errors > 0)
+    {
+      $this->addFlash('error', $errors);
+    }
+    $this->em->persist($loc);
+    $this->em->flush();
+    $this->addFlash('success', 'Location Created');
+    return $this->redirectToRoute('loc_list', ['loc_code' => $loc->getLocCode()]);
   }
 
 
@@ -198,7 +222,7 @@ class LocationController extends AbstractController
       'item_exp_date' => 'Item Exp. Date',
       'item_qty' => 'Item Total Qty.',
     ];
-    // to autofill form fields, or leave them null.                                                                                               
+    // to autofill form fields, or leave them null.
     $result = $this->item_repo->findByLoc($loc_code);
     $result = $this->paginator->paginate($result, $item_page, 10, ['pageParameterName' => 'item_page', 'sortParameterName' => 'item_sort', 'sortDirectionParameterName' => 'item_direction']);
     $normalized_items = [];

@@ -58,6 +58,7 @@ class ItemType extends AbstractType
         'attr' => [
           'form' => $builder->getName() . '_form',
           'formaction' => $this->router->generate('item_list'),
+          'formmethod' => 'post',
         ],
       ])
       ->add('search', SubmitType::class, [
@@ -73,6 +74,7 @@ class ItemType extends AbstractType
         'attr' => [
           'form' => $builder->getName() . '_form',
           'formaction' => $this->router->generate('item_save'),
+          'formmethod' => 'post',
         ],
       ])
       ->add('delete', SubmitType::class, [
@@ -80,6 +82,7 @@ class ItemType extends AbstractType
         'attr' => [
           'form' => $builder->getName() . '_form',
           'formaction' => $this->router->generate('item_delete'),
+          'formmethod' => 'patch',
         ],
       ])
     ;

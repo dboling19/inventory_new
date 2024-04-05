@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\PurchaseOrder;
 use App\Entity\Vendor;
 use App\Form\VendorType;
 use App\Repository\PurchaseOrderRepository;
@@ -19,6 +20,7 @@ class VendorController extends AbstractController
     private EntityManagerInterface $em,
     private VendorRepository $vendor_repo,
     private PaginatorInterface $paginator,
+    private PurchaseOrderRepository $po_repo,
   ) {}
 
 
@@ -161,5 +163,26 @@ class VendorController extends AbstractController
     $this->em->flush();
     return $this->redirectToRoute('vendor_list');
     $this->addFlash('success', 'vendor removed.');
+  }
+
+
+  /**
+   * Fetches vendor of PO for template fragment
+   * 
+   * @author Daniel Boling
+   */
+  public function vendor_details(Request $request, ?string $po_num): Response
+  {
+    if ($po_num != null)
+    {
+      $po = $this->po_repo->find($po_num);
+    } else {
+      $po = new PurchaseOrder;
+    }
+    $vendor = $po->getPoVendor();
+    $vendor_details_form = $this->createForm(VendorType::class, $vendor);
+    return $this->render('vendor/vendor_form.html.twig', [
+      'form' => $vendor_details_form,
+    ]);
   }
 }
