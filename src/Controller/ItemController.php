@@ -52,33 +52,10 @@ class ItemController extends AbstractController
       $item = new Item;
     }
     $item_form = $this->createForm(ItemType::class, $item);
-    $item_thead = [
-      'item_code' => 'Item Code',
-      'item_desc' => 'Item Desc',
-      'item_unit' => 'Item Unit',
-      'item_notes' => 'Item Notes',
-      'item_exp_date' => 'Item Exp. Date',
-      'item_qty' => 'Item Total Qty.',
-    ];
-    // to autofill form fields, or leave them null.
     $result = $this->item_repo->findAll();
     $result = $this->paginator->paginate($result, $request->query->getInt('page', 1), 100);
-    $normalized_items = [];
-    foreach ($result->getItems() as $item)
-    {
-      $normalized_items[] = [
-        'item_code' => $item->getItemCode(),
-        'item_desc' => $item->getItemDesc(),
-        'item_notes' => $item->getItemNotes(),
-        'item_exp_date' => $item->getItemExpDate(),
-        'item_qty' => $item->getItemQty(),
-        'item_unit' => $item->getItemUnit()->getUnitCode(),
-      ];
-    }
-    $result->setItems($normalized_items);
     return $this->render('item/list_items.html.twig', [
       'items' => $result,
-      'item_thead' => $item_thead,
       'form' => $item_form,
     ]);
   }
@@ -116,9 +93,9 @@ class ItemController extends AbstractController
     $item_form->handleRequest($request);
     $item = $item_form->getData();
     if (
-      $item_form->get('item_code') == null ||
-      $item_form->get('item_desc') == null ||
-      $item_form->get('item_unit') == null
+      $item->getItemCode() == null ||
+      $item->getItemDesc() == null ||
+      $item->getItemUnit() == null
     ) {
       $this->addFlash('error', 'Error: Invalid Submission - Item not updated');
       return $this->redirectToRoute('item_list', ['item_code' => $item->getItemCode()]);
@@ -173,15 +150,18 @@ class ItemController extends AbstractController
    * @author Daniel Boling
    */
   #[Route('/item/delete/', name:'item_delete')]
-  public function delete_item(Request $request)
+  public function item_delete(Request $request): Response
   {
     $item_form = $this->createForm(ItemType::class);
     $item_form->handleRequest($request);
     $item = $item_form->getData();
     $item = $this->item_repo->find($item->getItemCode());
-
-    if ($item->getItemQty() !== 0)
-    {
+    dd($item->getPurchaseOrders());
+    if (
+      $item->getItemQty() !== 0 ||
+      count($item->getItemLoc()) > 0
+    ) {
+      $this->addFlash('error', 'Delete Error - Quantity is greater than 0 - Item not Deleted.');
       return $this->redirectToRoute('item_list', ['item_code' => $item->getItemCode()]);
     }
 

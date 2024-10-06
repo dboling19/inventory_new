@@ -3,7 +3,20 @@
 {% block content %}
 <div class="db-wrapper">
   <div class="db-resize-horizontal db-quarter">
-    <div {{ stimulus_controller('table_widget', {'thead': loc_thead, 'tdata': locations.items}) }}></div>
+    <table>
+      <tr>
+        <th>{{ knp_pagination_sortable(locations, 'Location Code', 'locCode') }}</th>
+        <th>{{ knp_pagination_sortable(locations, 'Location Desc', 'locDesc') }}</th>
+        <th>{{ knp_pagination_sortable(locations, 'Total Items Qty', 'itemQty') }}</th>
+      </tr>
+      {% for row in locations %}
+        <tr>
+          <td>{{ row.locCode }}</td>
+          <td>{{ row.locDesc }}</td>
+          <td>{{ row.itemQty }}</td>
+        </tr>
+      {% endfor %}
+    </table>
     {{ knp_pagination_render(locations, 'pagination/dboling_pagination.html.twig') }}
   </div>
   <div class="db-wrapper db-column db-panel">

@@ -82,7 +82,7 @@ class ItemType extends AbstractType
         'attr' => [
           'form' => $builder->getName() . '_form',
           'formaction' => $this->router->generate('item_delete'),
-          'formmethod' => 'patch',
+          'formmethod' => 'post',
         ],
       ])
     ;

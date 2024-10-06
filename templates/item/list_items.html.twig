@@ -2,8 +2,25 @@
 {% block title %}Items{% endblock %}
 {% block content %}
 <div class="db-wrapper">
-  <div class="db-resize-horizontal">
-    <div {{ stimulus_controller('table_widget', {'thead': item_thead, 'tdata': items.items}) }}></div>
+  <div class="db-resize-horizontal db-quarter">
+    <table>
+      <tr>
+        <th>{{ knp_pagination_sortable(items, 'Item Code', 'itemCode') }}</th>
+        <th>{{ knp_pagination_sortable(items, 'Item Desc', 'itemDesc') }}</th>
+        <th>{{ knp_pagination_sortable(items, 'Item Qty.', 'itemQty') }}</th>
+        <th>{{ knp_pagination_sortable(items, 'Item Exp. Date', 'itemExpDate') }}</th>
+        <th>{{ knp_pagination_sortable(items, 'Item Unit', 'itemUnit.unitCode') }}</th>
+      </tr>
+      {% for row in items %}
+        <tr>
+          <td>{{ row.itemCode }}</td>
+          <td>{{ row.itemDesc }}</td>
+          <td>{{ row.itemQty }}</td>
+          <td>{{ row.itemExpDate is empty ? "" : row.itemExpDate|date('m/d/Y') }}</td>
+          <td>{{ row.itemUnit.unitCode }}</td>
+        </tr>
+      {% endfor %}
+    </table>
     {{ knp_pagination_render(items, 'pagination/dboling_pagination.html.twig') }}
   </div>
   {{ include('item/item_form.html.twig') }}

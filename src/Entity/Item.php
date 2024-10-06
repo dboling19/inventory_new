@@ -23,14 +23,12 @@ class Item
   #[ORM\OneToMany(targetEntity:Transaction::class, mappedBy:"item", cascade:["persist", "remove"])]
   #[ORM\InverseJoinColumn(nullable:false, name:'item_code', referencedColumnName:'item_code')]
   #[ORM\InverseJoinColumn(nullable:false, name:'loc_code', referencedColumnName:'loc_code')]
-  #[MaxDepth(1)]
   private $item_trans;
 
   #[ORM\OneToMany(targetEntity:ItemLocation::class, mappedBy:"item", cascade:["persist", "remove"])]
   #[ORM\JoinColumn(name:'item_code', referencedColumnName:'item_code')]
   #[ORM\JoinColumn(name:'loc_code', referencedColumnName:'loc_code')]
   #[ORM\JoinColumn(name:'whs_code', referencedColumnName:'whs_code')]
-  #[MaxDepth(1)]
   private $item_loc = null;
 
   #[ORM\Column(type:'datetime', nullable:true)]
@@ -38,12 +36,13 @@ class Item
 
   #[ORM\ManyToOne(inversedBy: 'items')]
   #[ORM\JoinColumn(name: 'unit_code', referencedColumnName: 'unit_code', nullable: false)]
-  #[MaxDepth(1)]
-  private ?Unit $item_unit;
+  private ?Unit $item_unit = null;
 
   private Collection $locations;
 
   private Collection $warehouses;
+
+  private Collection $po_lines;
 
 
   public function __construct()
@@ -221,6 +220,17 @@ class Item
     }
 
     return $this;
+  }
+  
+  /**
+   * @return Collection<int, PO_Lines>
+   */
+  public function getPOLines(): Collection
+  {
+    $this->po_lines = new ArrayCollection;
+    
+
+    return $this->po_lines;
   }
 
 }

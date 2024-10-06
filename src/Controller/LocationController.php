@@ -49,29 +49,10 @@ class LocationController extends AbstractController
       $loc = new Location;
     }
     $loc_form = $this->createForm(LocationType::class, $loc);
-    $loc_thead = [
-      'loc_code' => 'Loc Code',
-      'loc_desc' => 'Loc Desc',
-      'loc_notes' => 'Loc Notes',
-      'item_total_qty' => 'Item Total Qty.',
-    ];
     $result = $this->loc_repo->findAll();
     $result = $this->paginator->paginate($result, $request->query->getInt('loc_page', 1), 100, ['pageParamterName' => 'loc_page', 'sortParameterName' => 'loc_sort', 'sortDirectionParameterName' => 'loc_direction']);
-    $normalized_locations = [];
-    foreach ($result->getItems() as $item)
-    {
-      $normalized_locations[] = [
-        'loc_code' => $item->getLocCode(),
-        'loc_desc' => $item->getLocDesc(),
-        'loc_notes' => $item->getLocNotes(),
-        'item_total_qty' => $item->getItemQty(),
-      ];
-    }
-    $result->setItems($normalized_locations);
-
     return $this->render('location/loc_list.html.twig', [
       'locations' => $result,
-      'loc_thead' => $loc_thead,
       'form' => $loc_form,
     ]);
   }
